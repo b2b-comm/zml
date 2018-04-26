@@ -1,0 +1,38 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+                xmlns:ui="http://java.sun.com/jsf/facelets"
+                xmlns:h="http://java.sun.com/jsf/html"
+                xmlns:f="http://java.sun.com/jsf/core"
+                xmlns:p="http://primefaces.org/ui"
+                  template="/WEB-INF/template.xhtml">
+
+    <ui:define name="title">
+        Algorithms
+    </ui:define>
+
+    <ui:define name="description">
+        Algorithms
+    </ui:define>
+
+    <ui:define name="implementation">
+
+        <h:form>
+            
+            <p:tree value="#{experimentorController.allAlgos}" var="algo" selectionMode="single"
+                selection="#{experimentorController.selectedAlgo}">
+                <p:ajax event="select" listener="#{experimentorController.onAlgoNodeSelect}"
+></p:ajax>
+<p:ajax event="unselect" listener="#{experimentorController.onAlgoNodeUnSelect}"
+></p:ajax>
+                <p:treeNode>
+                    <h:outputText value="#{algo}" />
+                </p:treeNode>
+            </p:tree>
+            <p:commandButton value="Submit" id="submitAlgo" update=":expForm:algos" actionListener="#{experimentorController.submitNewAlgo}" styleClass="ui-priority-primary" />
+          
+            
+        </h:form>
+        
+    </ui:define>
+
+   
+</ui:composition>

@@ -1,0 +1,195 @@
+<ui:composition xmlns="http://www.w3.org/1999/xhtml"
+	xmlns:ui="http://java.sun.com/jsf/facelets"
+	xmlns:h="http://java.sun.com/jsf/html"
+	xmlns:f="http://java.sun.com/jsf/core"
+	xmlns:p="http://primefaces.org/ui" template="/WEB-INF/template.xhtml">
+
+	<ui:define name="title">
+        Experimentor
+    </ui:define>
+
+	<ui:define name="description">
+        Like Weka experimentor.
+    </ui:define>
+
+	<ui:define name="implementation">
+
+		<h:form id="expForm">
+
+			<p:growl id="msgs" showDetail="true" />
+
+
+			<p:tabView>
+				<p:tab title="Setup">
+
+					<p:fieldset legend="Experiment Type" style="margin-bottom:20px">
+						<p:panelGrid>
+							<p:row>
+								<p:column colspan="2">
+									<p:selectOneMenu id="splitType"
+										value="#{experimentorController.splitType}"
+										style="width:125px">
+										<f:selectItem itemLabel="Select One" itemValue="" />
+										<f:selectItem itemLabel="Cross-validation"
+											itemValue="Cross-validation" />
+
+									</p:selectOneMenu>
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<h:outputLabel for="folds" value="Number of Folds: " />
+								</p:column>
+								<p:column>
+									<p:spinner id="folds" value="#{experimentorController.folds}" />
+								</p:column>
+							</p:row>
+							<p:row>
+								<p:column>
+									<p:outputLabel for="expType" value="Experiment Type:" />
+								</p:column>
+								<p:column>
+									<p:selectOneRadio id="expType"
+										value="#{experimentorController.expType}">
+										<f:selectItem itemLabel="Classification"
+											itemValue="Classification" />
+										<f:selectItem itemLabel="Regression" itemValue="Regression" />
+									</p:selectOneRadio>
+								</p:column>
+							</p:row>
+						</p:panelGrid>
+					</p:fieldset>
+					<p:fieldset legend="Datasets" style="margin-bottom:20px">
+						<p:dialog header="DataSet Path" widgetVar="dsDlg" modal="true"
+							height="100">
+							<h:form>
+								<h:outputLabel for="selectedDataSet" value="Url: " />
+								<h:inputText id="selectedDataSet"
+									value="#{experimentorController.submittedDataSet}" />
+								<p:commandButton value="Submit" id="submitDs"
+									update=":#{component.namingContainer.parent.namingContainer.clientId}:dataSets"
+									actionListener="#{experimentorController.submitNewDataSet}"
+									styleClass="ui-priority-primary"
+									oncomplete="PF('dsDlg').hide();" />
+							</h:form>
+						</p:dialog>
+						<p:commandButton value="Add new..." id="addNewDs"
+							actionListener="#{experimentorController.addNewDs}"
+							styleClass="ui-priority-primary" oncomplete="PF('dsDlg').show();" />
+						<p:commandButton value="Edit selected..." id="editDs"
+							actionListener="#{experimentorController.editDs}"
+							styleClass="ui-priority-primary" oncomplete="PF('dsDlg').show();" />
+						<p:commandButton value="Delete selected" id="deleteDs"
+							update="dataSets"
+							actionListener="#{experimentorController.deleteDs}"
+							styleClass="ui-priority-primary" />
+						<p:orderList id="dataSets"
+							value="#{experimentorController.dataSets}" var="ds"
+							itemValue="#{ds}" controlsLocation="right" responsive="true">
+							<p:ajax event="select"
+								listener="#{experimentorController.onSelectDs}"
+								update="editDs,deleteDs" />
+							<p:ajax event="unselect"
+								listener="#{experimentorController.onUnselectDs}"
+								update="editDs,deleteDs" />
+							<p:ajax event="reorder"
+								listener="#{experimentorController.onReorderDs}"
+								update="dataSets" />
+							<p:column>
+								<h:outputText value="#{ds}" />
+							</p:column>
+						</p:orderList>
+					</p:fieldset>
+					<p:fieldset legend="Algorithms" style="margin-bottom:20px">
+						<p:dialog header="Algorithms" widgetVar="algoDlg" modal="true"
+							height="100">
+							<h:form>
+
+								<p:tree value="#{experimentorController.allAlgos}" var="algo"
+									selectionMode="single"
+									selection="#{experimentorController.submittedAlgo}">
+									<p:ajax event="select"
+										listener="#{experimentorController.onAlgoNodeSelect}"></p:ajax>
+									<p:ajax event="unselect"
+										listener="#{experimentorController.onAlgoNodeUnSelect}"></p:ajax>
+									<p:treeNode>
+										<h:outputText value="#{algo}" />
+									</p:treeNode>
+								</p:tree>
+								<p:commandButton value="Submit" id="submitAlgo"
+									update=":#{component.namingContainer.parent.namingContainer.clientId}:algos"
+									actionListener="#{experimentorController.submitNewAlgo}"
+									styleClass="ui-priority-primary"
+									oncomplete="PF('algoDlg').hide();" />
+
+
+							</h:form>
+
+						</p:dialog>
+						<p:commandButton value="Add New..." id="addNewAlgo" update="algos"
+							actionListener="#{experimentorController.addNewAlgo}"
+							styleClass="ui-priority-primary"
+							oncomplete="PF('algoDlg').show();" />
+
+						<p:commandButton value="Edit selected" id="editAlgo"
+							update="algos"
+							actionListener="#{experimentorController.editAlgo}"
+							styleClass="ui-priority-primary"
+							oncomplete="PF('algoDlg').show();" />
+
+						<p:commandButton value="Delete selected" id="deleteAlgo"
+							update="algos"
+							actionListener="#{experimentorController.deleteAlgo}"
+							styleClass="ui-priority-primary" />
+						<p:orderList id="algos" value="#{experimentorController.algos}"
+							var="algo" itemValue="#{algo}" controlsLocation="right"
+							responsive="true">
+							<p:ajax event="select"
+								listener="#{experimentorController.onSelectAlgo}" update="algos" />
+							<p:ajax event="unselect"
+								listener="#{experimentorController.onUnselectAlgo}"
+								update="algos" />
+							<p:ajax event="reorder"
+								listener="#{experimentorController.onReorderAlgo}"
+								update="algos" />
+							<p:column>
+								<h:outputText value="#{algo}" />
+							</p:column>
+						</p:orderList>
+					</p:fieldset>
+					<p:fieldset legend="Iteration Control" style="margin-bottom:20px">
+						<h:outputLabel for="runs" value="Number of Runs: " />
+						<p:spinner id="runs" value="#{experimentorController.runs}" />
+					</p:fieldset>
+					<p:fieldset legend="Results Destination" style="margin-bottom:20px">
+						<p:selectOneMenu id="resultExt"
+							value="#{experimentorController.resultExt}" style="width:125px">
+							<f:selectItem itemLabel="ARFF file" itemValue="arff" />
+							<f:selectItem itemLabel="CSV file" itemValue="csv" />
+
+						</p:selectOneMenu>
+
+						<p:inputText id="result" value="#{experimentorController.result}" />
+					</p:fieldset>
+					<p:commandButton value="Run" id="runExp" update="analysedResult"
+						actionListener="#{experimentorController.runExperiment}"
+						styleClass="ui-priority-primary" />
+
+				</p:tab>
+
+				<p:tab title="Analyse">
+					<p:fieldset legend="Output" style="margin-bottom:20px">
+						<p:scrollPanel id="analysedResultPanel"
+							style="width:250px;height:200px">
+							<h:outputText id="analysedResult"
+								value="#{experimentorController.expResult}" />
+						</p:scrollPanel>
+					</p:fieldset>
+				</p:tab>
+			</p:tabView>
+
+
+		</h:form>
+
+	</ui:define>
+</ui:composition>

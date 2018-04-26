@@ -1,0 +1,11 @@
+/target/
+/nbactions-elite-dev.xml
+/nbactions.xml
+/nb-configuration.xml
+.project
+.classpath
+.settings
+.tern-project
+.DS_STORE
+.vscode
+/bin/
